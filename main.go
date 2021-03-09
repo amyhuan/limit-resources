@@ -6,20 +6,20 @@ import (
 	"os"
 )
 
-func GetCPU(jun *JuniperUtilizationReader) {
+func ShowCPU(jun *JuniperUtilizationReader) {
 	cpuPercent, err := jun.GetCPUPercent()
 	if err != nil {
 		log.Printf("Failed to get CPU percentage: %s", err)
 	}
-	log.Printf("Baseline CPU usage: %f%", cpuPercent)
+	log.Printf("Baseline CPU usage: %d\%", cpuPercent)
 }
 
-func GetMem(jun *JuniperUtilizationReader) {
+func ShowMem(jun *JuniperUtilizationReader) {
 	memPercent, err := jun.GetMemoryPercent()
 	if err != nil {
 		log.Printf("Failed to get CPU percentage: %s", err)
 	}
-	log.Printf("Baseline memory usage: %f%", memPercent)
+	log.Printf("Baseline memory usage: %d\%", memPercent)
 }
 
 func main() {
@@ -42,8 +42,8 @@ func main() {
 		}
 	}
 
-	GetCPU(jun)
-	GetMem(jun)
+	ShowCPU(jun)
+	ShowMem(jun)
 
 	// Delete files made
 	for i := 0; i < 100; i++ {
