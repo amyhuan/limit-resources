@@ -19,22 +19,22 @@ func NewJuniperUtilizationReader() (*JuniperUtilizationReader, error) {
 }
 
 func (jun *JuniperUtilizationReader) GetCPUPercent() (float64, error) {
-	sysInfo, err := stat(pid, "ps")
+	sysInfo, err := stat(jun.pid, "ps")
 	return float64(sysInfo.CPU), err
 }
 
 func (jun *JuniperUtilizationReader) GetMemoryPercent() (float64, error) {
-	sysInfo, err := stat(pid, "ps")
+	sysInfo, err := stat(jun.pid, "ps")
 	return float64(sysInfo.Memory), err
 }
 
 func (jun *JuniperUtilizationReader) GetCPUTime() (float64, error) {
-	sysInfo, err := stat(pid, "ps")
+	sysInfo, err := stat(jun.pid, "ps")
 	return float64(sysInfo.CPUTime), err
 }
 
 func (jun *JuniperUtilizationReader) GetMemoryMB() (float64, error) {
-	sysInfo, err := stat(pid, "ps")
+	sysInfo, err := stat(jun.pid, "ps")
 	return float64(sysInfo.MemoryMB), err
 }
 

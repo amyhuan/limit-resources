@@ -11,7 +11,7 @@ func ShowCPUPercent(jun *JuniperUtilizationReader) {
 	if err != nil {
 		log.Printf("Failed to get CPU percentage: %s", err)
 	}
-	log.Printf("CPU usage: %d\%", cpuPercent)
+	log.Printf("CPU usage: %d percent", cpuPercent)
 }
 
 func ShowMemPercent(jun *JuniperUtilizationReader) {
@@ -19,7 +19,7 @@ func ShowMemPercent(jun *JuniperUtilizationReader) {
 	if err != nil {
 		log.Printf("Failed to get mem percentage: %s", err)
 	}
-	log.Printf("Memory usage: %d\%", memPercent)
+	log.Printf("Memory usage: %d percent", memPercent)
 }
 
 func ShowCPU(jun *JuniperUtilizationReader) {
@@ -44,8 +44,8 @@ func main() {
 		log.Printf("Failed to create juniper utilization reader: %s", err)
 	}
 
-	log.Printf("Creating 100 files and writing short string to them")
-	for i := 0; i < 1000000; i++ {
+	log.Printf("Creating 10000 files and writing short string to them")
+	for i := 0; i < 10000; i++ {
 		path := fmt.Sprintf("test-file-%v.txt", i)
 		var file, err = os.OpenFile(path, os.O_RDWR|os.O_CREATE, 0644)
 		if err != nil {
@@ -53,7 +53,7 @@ func main() {
 			break
 		}
 		defer file.Close()
-		// About 20 bytes, so 10^6 of these is about 2MB
+		// About 20 bytes, so 10^5 of these is about .2MB
 		_, err = file.WriteString(fmt.Sprintf("hello this is file %v", i))
 		if err != nil {
 			log.Printf("Failed to write to file %s: %v", path, err)
