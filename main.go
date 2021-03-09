@@ -28,7 +28,8 @@ func main() {
 		log.Printf("Failed to create juniper utilization reader: %s", err)
 	}
 
-	for i := 0; i < 100; i++ {
+	log.Printf("Creating 100 files and writing short string to them")
+	for i := 0; i < 1000000; i++ {
 		path := fmt.Sprintf("test-file-%v.txt", i)
 		var file, err = os.OpenFile(path, os.O_RDWR|os.O_CREATE, 0644)
 		if err != nil {
@@ -36,6 +37,7 @@ func main() {
 			break
 		}
 		defer file.Close()
+		// About 20 bytes, so 10^6 of these is about 2MB
 		_, err = file.WriteString(fmt.Sprintf("hello this is file %v", i))
 		if err != nil {
 			log.Printf("Failed to write to file %s: %v", path, err)
@@ -45,7 +47,7 @@ func main() {
 	ShowCPU(jun)
 	ShowMem(jun)
 
-	// Delete files made
+	log.Printf("Cleaning up 100 files")
 	for i := 0; i < 100; i++ {
 		path := fmt.Sprintf("test-file-%v.txt", i)
 		err := os.Remove(path)
