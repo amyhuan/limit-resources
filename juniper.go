@@ -45,7 +45,7 @@ func stat(pid int, statType string) (*SysInfo, error) {
 	if len(stdout) == 0{
 		return sysInfo, errors.New("Didn't get ps printout successfully with pid " + strconv.Itoa(pid))
 	}
-	ret := formatStdOut(stdout, 1)
+	ret := formatStdOut(stdout, 3)
 	if len(ret) == 0{
 		return sysInfo, errors.New("Can't find process with this PID: " + strconv.Itoa(pid))
 	}
