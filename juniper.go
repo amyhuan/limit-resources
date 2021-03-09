@@ -40,12 +40,12 @@ func (jun *JuniperUtilizationReader) GetMemoryMB() (float64, error) {
 
 func stat(pid int, statType string) (*SysInfo, error) {
 	sysInfo := &SysInfo{}
-	args := "-o pcpu,pmem,cutime,size -p"
+	args := "-o pcpu,pmem,cputime,vsz -p"
 	stdout, _ := exec.Command("ps", args, strconv.Itoa(pid)).Output()
 	if len(stdout) == 0{
 		return sysInfo, errors.New("Didn't get ps printout successfully with pid " + strconv.Itoa(pid))
 	}
-	ret := formatStdOut(stdout, 3)
+	ret := formatStdOut(stdout, 1)
 	if len(ret) == 0{
 		return sysInfo, errors.New("Can't find process with this PID: " + strconv.Itoa(pid))
 	}
