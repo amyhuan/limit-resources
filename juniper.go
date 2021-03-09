@@ -18,27 +18,29 @@ func NewJuniperUtilizationReader() (*JuniperUtilizationReader, error) {
 	}, nil
 }
 
-func getCPUPercentPid(pid int)(float64, error){
+func (jun *JuniperUtilizationReader) GetCPUPercent() (float64, error) {
 	sysInfo, err := stat(pid, "ps")
 	return float64(sysInfo.CPU), err
 }
 
-func getMemoryStatsPid(pid int)(float64, error){
+func (jun *JuniperUtilizationReader) GetMemoryPercent() (float64, error) {
 	sysInfo, err := stat(pid, "ps")
 	return float64(sysInfo.Memory), err
 }
 
-func (jun *JuniperUtilizationReader) GetCPUPercent() (float64, error) {
-	return getCPUPercentPid(jun.pid)
+func (jun *JuniperUtilizationReader) GetCPUTime() (float64, error) {
+	sysInfo, err := stat(pid, "ps")
+	return float64(sysInfo.CPUTime), err
 }
 
-func (jun *JuniperUtilizationReader) GetMemoryPercent() (float64, error) {
-	return getMemoryStatsPid(jun.pid)
+func (jun *JuniperUtilizationReader) GetMemoryMB() (float64, error) {
+	sysInfo, err := stat(pid, "ps")
+	return float64(sysInfo.MemoryMB), err
 }
 
 func stat(pid int, statType string) (*SysInfo, error) {
 	sysInfo := &SysInfo{}
-	args := "-o pcpu,pmem -p"
+	args := "-o pcpu,pmem,cutime,size -p"
 	stdout, _ := exec.Command("ps", args, strconv.Itoa(pid)).Output()
 	if len(stdout) == 0{
 		return sysInfo, errors.New("Didn't get ps printout successfully with pid " + strconv.Itoa(pid))
@@ -49,6 +51,8 @@ func stat(pid int, statType string) (*SysInfo, error) {
 	}
 	sysInfo.CPU = parseFloat(ret[0])
 	sysInfo.Memory = parseFloat(ret[1])
+	sysInfo.CPUTime = parseFloat(ret[2])
+	sysInfo.MemoryMB = parseFloat(ret[3])
 	return sysInfo, nil
 }
 
@@ -66,6 +70,8 @@ func parseFloat(val string) float64 {
 type SysInfo struct {
 	CPU	float64
 	Memory  float64
+	CPUTime	float64
+	MemoryMB  float64
 }
 
 type Stat struct {
