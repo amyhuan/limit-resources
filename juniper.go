@@ -40,7 +40,7 @@ func (jun *JuniperUtilizationReader) GetMemoryMB() (float64, error) {
 
 func stat(pid int, statType string) (*SysInfo, error) {
 	sysInfo := &SysInfo{}
-	args := "-o pcpu,pmem,cputime,vsz -p"
+	args := "-o pcpu,pmem,cputime,rss -p"
 	stdout, _ := exec.Command("ps", args, strconv.Itoa(pid)).Output()
 	if len(stdout) == 0{
 		return sysInfo, errors.New("Didn't get ps printout successfully with pid " + strconv.Itoa(pid))
@@ -52,7 +52,7 @@ func stat(pid int, statType string) (*SysInfo, error) {
 	sysInfo.CPU = parseFloat(ret[0])
 	sysInfo.Memory = parseFloat(ret[1])
 	sysInfo.CPUTime = parseFloat(ret[2])
-	sysInfo.MemoryMB = parseFloat(ret[3])
+	sysInfo.MemoryMB = parseFloat(ret[3])/1000 // rss gives KB
 	return sysInfo, nil
 }
 

@@ -11,7 +11,7 @@ func ShowCPUPercent(jun *JuniperUtilizationReader) {
 	if err != nil {
 		log.Printf("Failed to get CPU percentage: %s", err)
 	}
-	log.Printf("CPU usage: %f percent", val)
+	log.Printf("CPU usage: %.2f percent", val)
 }
 
 func ShowMemPercent(jun *JuniperUtilizationReader) {
@@ -19,7 +19,7 @@ func ShowMemPercent(jun *JuniperUtilizationReader) {
 	if err != nil {
 		log.Printf("Failed to get mem percentage: %s", err)
 	}
-	log.Printf("Memory usage: %f percent", val)
+	log.Printf("Memory usage: %.2f percent", val)
 }
 
 func ShowCPU(jun *JuniperUtilizationReader) {
@@ -27,7 +27,7 @@ func ShowCPU(jun *JuniperUtilizationReader) {
 	if err != nil {
 		log.Printf("Failed to get CPU time: %s", err)
 	}
-	log.Printf("CPU time usage: %f ", val)
+	log.Printf("CPU time usage: %.0f ", val)
 }
 
 func ShowMem(jun *JuniperUtilizationReader) {
@@ -35,7 +35,7 @@ func ShowMem(jun *JuniperUtilizationReader) {
 	if err != nil {
 		log.Printf("Failed to get memory: %s", err)
 	}
-	log.Printf("Memory usage: %f MB", val)
+	log.Printf("Memory usage: %.0f MB", val)
 }
 
 func main() {
