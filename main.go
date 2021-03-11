@@ -45,7 +45,8 @@ func main() {
 	}
 
 	log.Printf("Creating 10000 files and writing short string to them")
-	for i := 0; i < 10000; i++ {
+	numFiles := 10000
+	for i := 0; i < numFiles; i++ {
 		path := fmt.Sprintf("test-file-%v.txt", i)
 		var file, err = os.OpenFile(path, os.O_RDWR|os.O_CREATE, 0644)
 		if err != nil {
@@ -66,7 +67,7 @@ func main() {
 	ShowMem(jun)
 
 	log.Printf("Cleaning up 100 files")
-	for i := 0; i < 100; i++ {
+	for i := 0; i < numFiles; i++ {
 		path := fmt.Sprintf("test-file-%v.txt", i)
 		err := os.Remove(path)
 		if err != nil {
