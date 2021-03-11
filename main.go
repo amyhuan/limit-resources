@@ -40,10 +40,12 @@ func ShowMem(jun *JuniperUtilizationReader) {
 }
 
 func ShowUsages(jun *JuniperUtilizationReader) {
+	fmt.Println()
 	ShowCPUPercent(jun)
 	ShowMemPercent(jun)
 	ShowCPU(jun)
 	ShowMem(jun)
+	fmt.Println()
 }
 
 func main() {
@@ -74,7 +76,7 @@ func main() {
 
 	ShowUsages(jun)
 
-	log.Printf("Cleaning up 100 files")
+	log.Printf("Cleaning up %v files", numFiles)
 	for i := 0; i < numFiles; i++ {
 		path := fmt.Sprintf("test-file-%v.txt", i)
 		err := os.Remove(path)
@@ -94,7 +96,7 @@ func main() {
 	log.Printf("Current limit on open files: %v", rLimit.Cur)
 	log.Printf("Max limit on open files: %v", rLimit.Max)
 
-	newFileLimit := uint64(20)
+	newFileLimit := int64(2 * numFiles - 5)
 	log.Printf("Limiting number of open files to %v", newFileLimit)
 	rLimit.Cur = newFileLimit
 	err = unix.Setrlimit(unix.RLIMIT_NOFILE, &rLimit)
@@ -121,7 +123,7 @@ func main() {
 
 	ShowUsages(jun)
 
-	log.Printf("Cleaning up 100 files")
+	log.Printf("Cleaning up %v files", numFiles)
 	for i := 0; i < numFiles; i++ {
 		path := fmt.Sprintf("test-file-%v.txt", i)
 		err := os.Remove(path)
