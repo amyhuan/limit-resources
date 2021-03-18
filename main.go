@@ -131,7 +131,7 @@ func TestMemoryLimit(jun *JuniperUtilizationReader) {
 	log.Printf("Usage before writing big file")
 	ShowUsages(jun)
 
-	bytesToWrite := 1000000 // 1MB
+	bytesToWrite := 12345678
 	fileName := fmt.Sprintf("%vbyte-file.txt", bytesToWrite)
 
 	// Write big file
@@ -161,7 +161,7 @@ func TestMemoryLimit(jun *JuniperUtilizationReader) {
 
 	// Change memory limit
 	var rLimit unix.Rlimit
-	err = unix.Getrlimit(unix.RLIMIT_RSS, &rLimit)
+	err = unix.Getrlimit(unix.RLIMIT_STACK, &rLimit)
 	if err != nil {
 		log.Printf("Couldn't get rLimit: %v", err)
 		return
@@ -169,11 +169,11 @@ func TestMemoryLimit(jun *JuniperUtilizationReader) {
 	log.Printf("Current limit on memory: %v bytes", rLimit.Cur)
 	log.Printf("Max limit on memory: %v bytes", rLimit.Max)
 
-	newMemLimit := int64(4000000) 
+	newMemLimit := int64(1000) 
 	log.Printf("Limiting memory to %v", newMemLimit)
 	rLimit.Cur = newMemLimit
 	rLimit.Max = newMemLimit
-	err = unix.Setrlimit(unix.RLIMIT_RSS, &rLimit)
+	err = unix.Setrlimit(unix.RLIMIT_STACK, &rLimit)
 	if err != nil {
 		log.Printf("Couldn't set rLimit: %v", err)
 		return
@@ -188,7 +188,7 @@ func TestMemoryLimit(jun *JuniperUtilizationReader) {
 	defer file.Close()
 
 	log.Printf("Writing bytes to file again")
-	bytesToWrite = 7654321
+	bytesToWrite = 12345678
 	bytes = make([]byte, bytesToWrite)
     	rand.Read(bytes)
 	n, err := file.Write(bytes)
