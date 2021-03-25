@@ -1,6 +1,9 @@
 package main
 
 import (
+	"time"
+	"os/exec"
+	"strconv"
 	"math/rand"
 	"log"
 	"fmt"
@@ -131,7 +134,7 @@ func TestMemoryLimit(jun *JuniperUtilizationReader) {
 	log.Printf("Usage before writing big file")
 	ShowUsages(jun)
 
-	bytesToWrite := 12345678
+	bytesToWrite := 1500000
 	fileName := fmt.Sprintf("%vbyte-file.txt", bytesToWrite)
 
 	// Write big file
@@ -161,7 +164,7 @@ func TestMemoryLimit(jun *JuniperUtilizationReader) {
 
 	// Change memory limit
 	var rLimit unix.Rlimit
-	err = unix.Getrlimit(unix.RLIMIT_STACK, &rLimit)
+	err = unix.Getrlimit(unix.RLIMIT_RSS, &rLimit)
 	if err != nil {
 		log.Printf("Couldn't get rLimit: %v", err)
 		return
@@ -173,7 +176,7 @@ func TestMemoryLimit(jun *JuniperUtilizationReader) {
 	log.Printf("Limiting memory to %v", newMemLimit)
 	rLimit.Cur = newMemLimit
 	rLimit.Max = newMemLimit
-	err = unix.Setrlimit(unix.RLIMIT_STACK, &rLimit)
+	err = unix.Setrlimit(unix.RLIMIT_RSS, &rLimit)
 	if err != nil {
 		log.Printf("Couldn't set rLimit: %v", err)
 		return
@@ -189,9 +192,9 @@ func TestMemoryLimit(jun *JuniperUtilizationReader) {
 
 	log.Printf("Writing bytes to file again")
 	bytesToWrite = 12345678
-	bytes = make([]byte, bytesToWrite)
-    	rand.Read(bytes)
-	n, err := file.Write(bytes)
+	newbytes := make([]byte, bytesToWrite)
+    	rand.Read(newbytes)
+	n, err := file.Write(newbytes)
 	if err != nil {
 		log.Printf("Failed to write to file %s: %v", fileName, err)
 	}
@@ -257,15 +260,44 @@ func TestCPULimit(jun *JuniperUtilizationReader) {
 	}
 }
 
+func monitorMemory(pid int) {
+	args := "-o rss -p"
+	for {
+		stdout, _ := exec.Command("ps", args, strconv.Itoa(pid)).Output()
+		if len(stdout) == 0{
+			log.Printf("Didn't get ps printout successfully with pid " + strconv.Itoa(pid))
+			return
+		}
+		ret := formatStdOut(stdout, 1)
+		if len(ret) == 0{
+			log.Printf("Can't find process with this PID: " + strconv.Itoa(pid))
+		}
+		bytesMemInUse := parseFloat(ret[0])
+
+		//log.Printf("MB mem in use: %v\n", bytesMemInUse)
+		if bytesMemInUse > 20000 {
+			log.Printf("KB mem in use: %v\n", bytesMemInUse)
+			//kill proc
+			err := unix.Kill(pid, 9)
+			if err != nil {
+				log.Printf("Didn't kill process: %v", err)
+			}
+		}
+		time.Sleep(1 * time.Millisecond)
+	}
+}
+
 
 func main() {
 	jun, err := NewJuniperUtilizationReader()
 	if err != nil {
 		log.Printf("Failed to create juniper utilization reader: %s", err)
 	}
+	go monitorMemory(jun.pid)
 
+	time.Sleep(1 * time.Second)
 	//TestOpenFileLimit(jun)
 	TestMemoryLimit(jun)
-	TestCPULimit(jun)
+//	TestCPULimit(jun)
 }
 
